@@ -1,0 +1,14 @@
+.animated-bg {
+  background: linear-gradient(-45deg, #1d3557, #457b9d, #a8dadc, #f1faee);
+  background-size: 400% 400%;
+  animation: gradientBG 12s ease infinite;
+  min-height: 100vh; /* full screen */
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

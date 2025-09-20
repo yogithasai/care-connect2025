@@ -1,15 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { sendChatMessage } from "../services/chatService";
+import { useSpeech } from "../hooks/useSpeech";
+import MicButton from "./MicButton";
 
 export default function Chatbox() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [typing, setTyping] = useState(false);
+  const { supported, speak } = useSpeech();
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (input.trim() === "") return;
     setMessages([...messages, { text: input, sender: "user" }]);
     setInput("");
-    // Here you can call backend GPT API to get response
-    setMessages(prev => [...prev, { text: "AI response placeholder", sender: "ai" }]);
+    setTyping(true);
+    const reply = await sendChatMessage(input);
+    setTyping(false);
+    setMessages(prev => [...prev, { text: reply, sender: "ai" }]);
+    if (supported.tts) speak(reply);
   };
 
   return (
@@ -22,8 +30,14 @@ export default function Chatbox() {
             </span>
           </div>
         ))}
+        {typing && (
+          <div className="text-left">
+            <span className="inline-block p-2 rounded-md bg-gray-200 text-gray-700">Assistant is typing...</span>
+          </div>
+        )}
       </div>
-      <div className="flex">
+      <div className="flex items-center gap-2">
+        <MicButton />
         <input
           className="flex-1 border rounded-l-md p-2"
           type="text"
